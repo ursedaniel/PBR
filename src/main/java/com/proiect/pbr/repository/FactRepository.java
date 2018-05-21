@@ -1,4 +1,9 @@
 package com.proiect.pbr.repository;
 
-public interface FactRepository {
+import com.proiect.pbr.model.Fact;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface FactRepository extends PagingAndSortingRepository<Fact,Long>{
 }
