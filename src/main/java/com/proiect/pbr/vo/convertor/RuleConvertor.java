@@ -9,7 +9,9 @@ public class RuleConvertor {
 
     public RuleVO toVO(Rule rule) {
         RuleVO ruleVO = new RuleVO();
-
+        
+        ruleVO.setCondition(rule.getCondition());
+        ruleVO.setBody(rule.getBody());
 
         return ruleVO;
     }
