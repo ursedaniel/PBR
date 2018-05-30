@@ -31,4 +31,9 @@ public class Controller {
     public String getFacts(@RequestParam String folder, @RequestParam int step){
       return service.getFacts(folder, step);
     }
+
+    @RequestMapping(value = "/fact", method = RequestMethod.GET)
+    public String getFact(){
+        return service.getFact();
+    }
 }

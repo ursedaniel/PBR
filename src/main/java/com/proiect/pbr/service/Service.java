@@ -8,4 +8,6 @@ public interface Service {
     boolean runPythonFile(String filename);
 
     String getFacts(String folder, int i);
+
+    String getFact();
 }

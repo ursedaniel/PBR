@@ -67,4 +67,21 @@ public class ServiceImpl implements Service {
         }
         return json;
     }
+
+    @Override
+    public String getFact() {
+        String json = "";
+        try {
+            File file = new File(outputfilepath + "\\roteNode.txt");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            String line;
+            while ((line = br.readLine()) != null)
+                json += line;
+
+        } catch (Exception e) {
+            return e.toString();
+        }
+        return json;
+    }
 }
