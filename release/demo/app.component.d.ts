@@ -1,0 +1,84 @@
+import { OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { HttpClient } from "@angular/common/http";
+export declare class AppComponent implements OnInit {
+    private http;
+    version: string;
+    theme: string;
+    chartType: string;
+    chartTypeGroups: any;
+    chart: any;
+    realTimeData: boolean;
+    countrySet: any[];
+    graph: {
+        links: any[];
+        nodes: any[];
+    };
+    hierarchialGraph: {
+        links: any[];
+        nodes: any[];
+    };
+    view: any[];
+    width: number;
+    height: number;
+    fitContainer: boolean;
+    autoZoom: boolean;
+    panOnZoom: boolean;
+    enableZoom: boolean;
+    autoCenter: boolean;
+    update$: Subject<any>;
+    center$: Subject<any>;
+    zoomToFit$: Subject<any>;
+    showLegend: boolean;
+    orientation: string;
+    orientations: any[];
+    nodes: {
+        id: string;
+        label: string;
+    }[];
+    links: any[];
+    id: number;
+    curveType: string;
+    curve: any;
+    interpolationTypes: string[];
+    testJson: any;
+    colorSchemes: any;
+    colorScheme: any;
+    schemeType: string;
+    selectedColorScheme: string;
+    folder: string;
+    folder2: string;
+    step: number;
+    step2: number;
+    sursa: any;
+    socialImages: {
+        id: number;
+        url: string;
+    }[];
+    socialImages2: {
+        id: number;
+        url: string;
+    }[];
+    constructor(http: HttpClient);
+    ngOnInit(): void;
+    importValues(): void;
+    insertNodesLinks(valuesArray: any, parent: any): void;
+    showFinal(): void;
+    downloadPhoto(): void;
+    getDetails(): void;
+    getDetails2(): void;
+    downloadPhoto2(): void;
+    updateData(): void;
+    applyDimensions(): void;
+    toggleEnableZoom(enableZoom: boolean): void;
+    toggleFitContainer(fitContainer: boolean, autoZoom: boolean, autoCenter: boolean): void;
+    selectChart(chartSelector: any): void;
+    select(data: any): void;
+    setColorScheme(name: any): void;
+    setInterpolationType(curveType: any): void;
+    onLegendLabelClick(entry: any): void;
+    toggleExpand(node: any): void;
+    updateChart(): void;
+    zoomToFit(): void;
+    center(): void;
+}

@@ -1,0 +1,218 @@
+<main [class]="theme">
+  <div class="chart-col">
+    <div style="position: absolute; top: 50px; left: 50px; right: 50px; bottom: 50px;">
+      <ngx-graph #graph class="chart-container" [view]="view" [enableZoom]="enableZoom" [autoZoom]="autoZoom"
+                 [panOnZoom]="panOnZoom"
+                 [panOffsetX]="panOffsetX" [panOffsetY]="panOffsetY" [zoomLevel]="zoomLevel" [autoCenter]="autoCenter"
+                 [legend]="showLegend"
+                 [links]="hierarchialGraph.links" (legendLabelClick)="onLegendLabelClick($event)"
+                 [nodes]="hierarchialGraph.nodes" [scheme]="colorScheme"
+                 [orientation]="orientation" [curve]="curve" [update$]="update$" [zoomToFit$]="zoomToFit$"
+                 [center$]="center$" (select)="select($event)">
+
+        <ng-template #defsTemplate>
+          <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+            <svg:path d="M0,-5L10,0L0,5" class="arrow-head"/>
+          </svg:marker>
+        </ng-template>
+
+        <ng-template #nodeTemplate let-node>
+          <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'"
+                 [tooltipTitle]="node.label">
+            <svg:rect [attr.width]="node.width" [attr.height]="node.height" [attr.fill]="node.options.color"/>
+            <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}</svg:text>
+          </svg:g>
+        </ng-template>
+
+        <ng-template #linkTemplate let-link>
+          <svg:g class="edge">
+            <svg:path class="line" stroke-width="2" marker-end="url(#arrow)">
+            </svg:path>
+            <svg:text class="edge-label" text-anchor="middle">
+              <textPath class="text-path" [attr.href]="'#' + link.id" [style.dominant-baseline]="link.dominantBaseline"
+                        startOffset="50%">
+                {{link.label}}
+              </textPath>
+            </svg:text>
+          </svg:g>
+        </ng-template>
+
+      </ngx-graph>
+    </div>
+  </div>
+  <div class="sidebar">
+    <h1>
+      Proiect-
+      <strong>PBR</strong>
+    </h1>
+
+    <div class="sidebar-body">
+      <h3>Tema</h3>
+      <select [ngModel]="theme" (ngModelChange)="theme = $event">>
+        <option [value]="'dark'">Dark</option>
+        <option [value]="'light'">Light</option>
+      </select>
+
+      <h3 (click)="dataVisable = !dataVisable" style="cursor: pointer">
+        <span [class.arrow-down]="dataVisable" [class.arrow-right]="!dataVisable">
+        </span>
+        <strong>Data</strong>
+      </h3>
+      <div [hidden]="!dataVisable" style="margin-left: 10px;">
+        <!--<div>-->
+        <!--<label>-->
+        <!--<input type="checkbox" [checked]="realTimeData" (change)="realTimeData = $event.target.checked"> Real-time-->
+        <!--</label>-->
+        <!--</div>-->
+        <div class="col-sm-1 left-labels text-right" style="padding:0;">
+          <div class="file-upload btn btn-business">
+            <span>Upload</span>
+            <input type="file" class="upload" multiple (change)="getDetails()">
+          </div>
+        </div>
+        <div class="col-sm-12" style="padding-top:30px;" *ngIf="uploadStarted">
+          <div style="margin-right:15px;position: relative;border: 1px solid #a4865d; width: 99%;padding: 1px;">
+            <div #progressStatus style="height:10px;background-color:#a4865d;"></div>
+            <div #progressText
+                 style="position: absolute; text-align: center; font-size: 12px;width: 100%; top:-4px; left: 0"
+                 class="genmed">0%
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div><img [src]="banner" *ngIf="loaded" width="380" height="100" style="padding-top: 10px;"></div>
+        </div>
+        <button class="btn btn-default" (click)="step = step-1; getDetails();">PASUL ANTERIOR</button>
+        <button class="btn btn-default" (click)="step = step+1; getDetails();" style="margin-left: 10px;">PASUL
+          URMATOR
+        </button>
+
+        <div class="col-sm-12">
+          <label>Pas:</label>
+          <input type="number" value="Introdu pasul" min="1" [(ngModel)]="step" (change)="getDetails()">
+        </div>
+        <br/>
+        <button class="btn btn-default" style="margin-left: 90px;" (click)="downloadPhoto()">DESCARCA POZA</button>
+      </div>
+      <div>
+        <h3 (click)="dimVisiable = !dimVisiable" style="cursor: pointer">
+          <span [class.arrow-down]="dimVisiable" [class.arrow-right]="!dimVisiable">
+          </span>
+          <strong>Dimensiuni</strong>
+        </h3>
+        <div [hidden]="!dimVisiable" style="margin-left: 10px;">
+          <label>
+            <input type="checkbox" [checked]="fitContainer"
+                   (change)="toggleFitContainer($event.target.checked, autoZoom, autoCenter)"> Incadrare
+          </label>
+          <br/>
+          <div *ngIf="!fitContainer">
+            <label>Lungime:</label>
+            <br/>
+            <input type="number" [(ngModel)]="width">
+            <br/>
+            <label>Inaltime:</label>
+            <br/>
+            <input type="number" [(ngModel)]="height">
+            <br/>
+            <button (click)="applyDimensions()">Aplica dimensiuni</button>
+          </div>
+        </div>
+      </div>
+
+      <h3 (click)="positionVisible = !positionVisible" style="cursor: pointer">
+        <span [class.arrow-down]="positionVisible" [class.arrow-right]="!positionVisible">
+        </span>
+        <strong>Pozitie si zoom</strong>
+      </h3>
+      <div [hidden]="!positionVisible" style="margin-left: 10px;">
+        <label>X:</label>
+        <input [(ngModel)]="graph.panOffsetX"/>
+        <br/>
+
+        <label>Y:</label>
+        <input [(ngModel)]="graph.panOffsetY"/>
+        <br/>
+
+        <label>Nivel zoom:</label>
+        <input [(ngModel)]="graph.zoomLevel"/>
+        <br/>
+        <label>
+          <input type="checkbox" [checked]="enableZoom" (change)="toggleEnableZoom($event.target.checked)"> Activeaza
+          zoom
+        </label>
+        <br/>
+        <label>
+          <input type="checkbox" [checked]="autoZoom"
+                 (change)="toggleFitContainer(fitContainer, $event.target.checked, autoCenter)"> Auto Zoom
+        </label>
+        <br/>
+        <label>
+          <input type="checkbox" [checked]="autoCenter"
+                 (change)="toggleFitContainer(fitContainer, autoZoom, $event.target.checked)"> Auto Center
+        </label>
+      </div>
+
+      <h3 (click)="colorVisible = !colorVisible" style="cursor: pointer">
+        <span [class.arrow-down]="colorVisible" [class.arrow-right]="!colorVisible">
+        </span>
+        <strong>Schema culori</strong>
+      </h3>
+      <select [hidden]="!colorVisible" style="margin-left: 10px;" [ngModel]="selectedColorScheme"
+              (ngModelChange)="setColorScheme($event)">
+        <option *ngFor="let scheme of colorSchemes" [value]="scheme.name">{{scheme.name}}</option>
+      </select>
+
+      <h3 (click)="optsVisible = !optsVisible" style="cursor: pointer">
+        <span [class.arrow-down]="optsVisible" [class.arrow-right]="!optsVisible">
+        </span>
+        <strong (click)="print()">Optiuni</strong>
+      </h3>
+      <div [hidden]="!optsVisible" style="margin-left: 10px;">
+        <label>Orientare</label>
+        <select [(ngModel)]="orientation">
+          <option *ngFor="let orient of orientations" [value]="orient.value">{{orient.label}}</option>
+        </select>
+
+        <!--<label>Legatura linii</label>-->
+        <!--<select [ngModel]="curveType" (ngModelChange)="setInterpolationType($event)">-->
+        <!--<option *ngFor="let interpolationType of interpolationTypes" [value]="interpolationType">-->
+        <!--{{interpolationType}}-->
+        <!--</option>-->
+        <!--</select>-->
+
+        <!--<label>Pan on zoom</label>-->
+        <!--<select [(ngModel)]="panOnZoom">-->
+        <!--<option [ngValue]="true">True</option>-->
+        <!--<option [ngValue]="false">False</option>-->
+        <!--</select>-->
+        <br/>
+        <br/>
+        <button class="btn btn-default" (click)="center()">Centru</button>
+        <button class="btn btn-default" (click)="zoomToFit()">Incadrare</button>
+        <button class="btn btn-default" (click)="updateChart()">Update</button>
+      </div>
+
+      <h3 (click)="exVisible = !exVisible" style="cursor: pointer">
+        <span [class.arrow-down]="exVisible" [class.arrow-right]="!exVisible">
+        </span>
+        <strong>Exemple</strong>
+      </h3>
+      <div [hidden]="!exVisible" style="margin-left: 10px;">
+        <br/>
+        <button class="btn btn-default" (click)="getDetails2()">IMPORTA</button>
+        <button class="btn btn-default" style="margin-left: 10px;" (click)="downloadPhoto2()">DESCARCA POZA</button>
+        <br/> <br/>
+
+        <button class="btn btn-default" style="margin: 0 auto; text-align: center;"
+                (click)="step2 = step2-1; getDetails2();">PASUL ANTERIOR
+        </button>
+        <button class="btn btn-default" style="margin: 0 auto; margin-left: 10px; text-align: center;"
+                (click)="step2 = step2+1; getDetails2();">PASUL URMATOR
+        </button>
+        <br/>
+      </div>
+    </div>
+
+  </div>
+</main>

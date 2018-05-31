@@ -22,15 +22,16 @@
     "allowSyntheticDefaultImports": true,
     "suppressExcessPropertyErrors": true,
     "suppressImplicitAnyIndexErrors": true,
-    "outDir": "dist",
+    "outDir": "release",
     "declarationDir": "release"
   },
   "files": [
-    "src/declarations.d.ts",
-    "src/index.ts"
+    "build/declarations.d.ts",
+    "build/index.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "demo"
   ],
   "compileOnSave": false,
   "buildOnSave": false,
